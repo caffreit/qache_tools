@@ -287,7 +287,7 @@
             data: wealthData_0,
             borderColor: '#19535f', // Styling options
             backgroundColor: '#19535f', // Styling options
-            borderWidth: isMobile ? 2 : 8, // Smaller size for mobile ,
+            borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
             padding: 20
           },
           {
@@ -295,7 +295,7 @@
             data: wealthData_x,
             borderColor: '#ee2b44', // Styling options
             backgroundColor: '#ee2b44', // Styling options
-            borderWidth: isMobile ? 2 : 8, // Smaller size for mobile ,
+            borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
             borderRadius: 2,
             padding: 20
           }
@@ -401,7 +401,7 @@
 
       // Set default point styles
       dataset.pointRadius = new Array(dataset.data.length).fill(3); // Default radius for all points
-      dataset.pointBackgroundColor = new Array(dataset.data.length).fill('rgba(0, 0, 0, 0.1)'); // Default color for all points
+      dataset.pointBackgroundColor = new Array(dataset.data.length).fill('#19535f'); // Default color for all points
 
       // Highlight the target data point
       dataset.pointRadius[targetIndex] = 15; // Larger radius for the target point
