@@ -298,7 +298,7 @@
             data: wealthData_0,
             borderColor: '#19535f', // Styling options
             backgroundColor: '#19535f', // Styling options
-            borderWidth: isMobile ? 2 : 8, // Smaller size for mobile ,
+            borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
             padding: 20
           },
           {
@@ -306,7 +306,7 @@
             data: wealthData_x,
             borderColor: '#ee2b44', // Styling options
             backgroundColor: '#ee2b44', // Styling options
-            borderWidth: isMobile ? 2 : 8, // Smaller size for mobile ,
+            borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
             borderRadius: 2,
             padding: 20
           }
@@ -391,7 +391,7 @@
       monthlyInvestmentValue.textContent = monthlyInvestmentSlider.value;
       interestRateValue_x.textContent = interestRateSlider_x.value;
 
-      // Display monthlyInvestment
+      // Display timeHorizon
       document.getElementById('timeHorizonValue_0').textContent = timeHorizon_0.toFixed(0);
       document.getElementById('timeHorizonValue_x').textContent = timeHorizon_x.toFixed(1);
 
@@ -413,9 +413,9 @@
 
       // Set default point styles
       dataset0.pointRadius = new Array(dataset0.data.length).fill(3); // Default radius for all points
-      dataset0.pointBackgroundColor = new Array(dataset0.data.length).fill('rgba(0, 0, 0, 0.1)'); // Default color for all points
+      dataset0.pointBackgroundColor = new Array(dataset0.data.length).fill('#19535f'); // Default color for all points
       dataset1.pointRadius = new Array(dataset1.data.length).fill(3); // Default radius for all points
-      dataset1.pointBackgroundColor = new Array(dataset1.data.length).fill('rgba(0, 0, 0, 0.1)'); // Default color for all points
+      dataset1.pointBackgroundColor = new Array(dataset1.data.length).fill('#ee2b44'); // Default color for all points
 
       // Highlight the target data point
       dataset0.pointRadius[targetIndex0] = 15; // Larger radius for the target point
