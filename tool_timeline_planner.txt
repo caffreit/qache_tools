@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
+  </head>
+  <div>
+    <div id="calculator-container">
+      <div id="slider-container">
+        <div id="currency-selection">
+          <button id="usdButton" title="United States Dollar" class="currency-button">USD</button>
+          <button id="eurButton" title="Euro" class="currency-button">EUR</button>
+          <button id="gbpButton" title="British Pound" class="currency-button">GBP</button>
+          <button id="inrButton" title="Indian Rupee" class="currency-button">INR</button>
+        </div>
+        <div class="slider-container">
+          <label for="targetWealthSlider">Target Wealth: <span class="currencySymbol"></span></label>
+          <span id="targetWealthValue"></span>
+          <input type="range" id="targetWealthSlider" min="500" max="10000" step="500" value="4000">
+
+          <label for="monthlyInvestmentSlider">Monthly Budget: <span class="currencySymbol"></span></label>
+          <span id="monthlyInvestmentValue"></span>
+          <input type="range" id="monthlyInvestmentSlider" min="50" max="1000" step="50" value="200">
+
+          <label for="interestRateSlider_x">Interest Rate (%): </label>
+          <span id="interestRateValue_x"></span>
+          <input type="range" id="interestRateSlider_x" min="0.5" max="6" step="0.5" value="2">
+
+        </div>
+        <div id="investment-info-container">
+          <p id="investment-info-text">Without interest, you'll have to wait <span id="timeHorizonValue_0"></span>  months. <br>With interest, you should wait <span id="timeHorizonValue_x"></span> months.</p>
+        </div>
+      </div>
+      <div id="chart-container">
+        <canvas id="wealthChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .currency-button {
+      background-color: #ffb100;
+      /*border-color: #ffb100;*/
+      border: 3px solid #0d0221;
+      border-radius: 25px;
+      padding: 12px 18px;
+      margin: 5px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* For mobile screens */
+    @media (max-width: 600px) {
+      .currency-button {
+        background-color: #ffb100;
+        /*border-color: #ffb100;*/
+        border: 5px solid #0d0221;
+        border-radius: 15px;
+        padding: 8px 15px;
+        margin: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    }
+
+    #calculator-container {
+      /* Targets the new parent container */
+      display: flex;
+      /*grid-template-columns: 250px 1fr;
+      /* Column 1 (sliders): 250px, Column 2 (chart): rest of space */
+      flex-direction: column;
+      /*justify-content: flex-start; */
+      gap: 40px;
+      /*  Spacing between the columns */
+    }
+
+    @media (min-width: 600px) {
+
+      /* Adjust the breakpoint as needed */
+      #calculator-container {
+        /*flex-direction: row;*/
+        display: grid;
+        /* Ensure vertical stacking on small screens */
+        grid-template-columns: 350px 1fr;
+        /* Define column widths (optional) */
+        align-items: start;
+      }
+    }
+
+    #slider-container input[type="range"] {
+      -webkit-appearance: none;
+      /* Removes default styling (important!) */
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 10px;
+      /* Add some spacing below */
+      margin-bottom: 30px;
+      /* Add some spacing below */
+      width: 100%;
+      /* Important: Ensure full width */
+      overflow: hidden;
+      /*background-color: #eaeaea;*/
+      height: 30px;
+      /* Adjust the height */
+      border-radius: 3px;
+    }
+
+    #slider-container input[type="range"]::-webkit-slider-runnable-track {
+      /*background: #e0e0e0;
+      /* Light gray track color */
+      /*background-color: #ddd;*/
+      /* Цвет фона ползунка */
+      /*opacity: 0.7;*/
+      /* border: none; /* Убираем границу */
+      border-radius: 2px;
+      height: 100%;
+      /*background: linear-gradient(to right, #ee2b44 0%, #ee2b44 50%, #ddd 50%, #ddd 100%);*/
+    }
+
+    #slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background: #ee2b44;
+      /* Red thumb color */
+      height: 30px;
+      width: 12px;
+      /*border-radius: 5px;*/
+      /* Creates a circle */
+      margin-top: 0px;
+    }
+
+    #slider-container label {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0D0221;
+      /*  Example Color */
+    }
+
+    #slider-container span {
+      font-size: 22px;
+      font-weight: bold;
+      /* Set your desired font size here */
+    }
+
+    #investment-info-container {
+      display: block;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 0 auto;
+      width: 100%;
+      margin-top: 50px;
+      /* Add some spacing below */
+      margin-bottom: 10px;
+      text-align: left;
+      /* Add some spacing below */
+      /*flex-grow: 1; /* Allows the investment container to expand vertically */
+    }
+
+    #chart-container {
+      width: 100%;
+      height: 600px;
+      /* Chart will take up 70% of its parent container */
+      /*grid-column-start: 2;
+      /* Places chart in the second column */
+    }
+
+    /* For mobile screens */
+    @media (max-width: 600px) {
+      #chart-container {
+        height: 400px;
+      }
+    }
+
+  </style>
+
+
+  <script>
+    //function setCurrencySymbol(symbol) {
+    //  document.getElementById('currencySymbol').textContent = symbol;
+    //}
+
+    // Function to update slider properties
+    function updateSliderCurrency(minW, maxW, stepW, valueW, minI, maxI, stepI, valueI) {
+      const targetWealthSlider = document.getElementById('targetWealthSlider');
+      targetWealthSlider.min = minW;
+      targetWealthSlider.max = maxW;
+      targetWealthSlider.step = stepW;
+      targetWealthSlider.value = valueW;
+      
+      const monthlyInvestmentSlider = document.getElementById('monthlyInvestmentSlider');
+      monthlyInvestmentSlider.min = minI;
+      monthlyInvestmentSlider.max = maxI;
+      monthlyInvestmentSlider.step = stepI;
+      monthlyInvestmentSlider.value = valueI;
+
+      // Update display to reflect changes
+      updateDisplayAndChart();
+    }
+
+    // Update the values for the slider fill 
+    function updateSliderFill(slider) {
+      const percentage = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, #ed7282 ${percentage}%, #eaeaea ${percentage}%)`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider); // Set initial fill
+        slider.addEventListener('input', function() {
+          updateSliderFill(this);
+        });
+        // Listener for clicking on the slider
+        slider.addEventListener('change', function() {
+          updateSliderFill(this);
+        });
+      });
+    });
+
+    //document.addEventListener('DOMContentLoaded', function() {
+    //  setCurrencySymbol('$');
+    //});
+
+    // Declare the variables here with initial values if desired: 
+    let targetWealth, monthlyInvestment, interestRate; // You can use let or const
+    let myChart; //  A variable to hold a reference to your Chart.js chart
+
+    function updateDisplayAndChart() {
+      // 1. Fetch slider values
+      const targetWealthSlider = document.getElementById('targetWealthSlider');
+      const targetWealthValue = document.getElementById('targetWealthValue');
+      const monthlyInvestmentSlider = document.getElementById('monthlyInvestmentSlider');
+      const monthlyInvestmentValue = document.getElementById('monthlyInvestmentValue');
+      const interestRateSlider_x = document.getElementById('interestRateSlider_x');
+      const interestRateValue_x = document.getElementById('interestRateValue_x');
+
+      targetWealth = parseFloat(targetWealthSlider.value);
+      monthlyInvestment = parseFloat(monthlyInvestmentSlider.value);
+      interestRate_x = parseFloat(interestRateSlider_x.value);
+
+      //console.log(targetWealth, timeHorizon, interestRate);
+
+      // 2. Perform DCA calculation
+      let timeHorizon_0;
+      let timeHorizon_x;
+      let r;
+
+      // Calculation section:
+      timeHorizon_0 = targetWealth / monthlyInvestment;
+
+      if (interestRate_x === 0) {
+        // Special case: Use this formula when interest rate is 0
+        timeHorizon_x = targetWealth / monthlyInvestment;
+      } else {
+        // General case: Use this formula when interest rate is not 0
+        r = (interestRate_x / 12 / 100)
+        //timeHorizon_x = (targetWealth * r) / (Math.pow(1 + r, monthlyInvestment) - 1);
+        timeHorizon_x = (Math.log(((targetWealth*r)/monthlyInvestment)+1))/(Math.log(1+r));
+      }
+      
+      
+
+
+      // 3. Create wealth data for the chart
+      // Wealth Data Generation
+      const wealthData_0 = [];
+      const wealthData_x = [];
+      wealthData_0.push(0); // Month 0 (starting with zero wealth) 
+      wealthData_x.push(0); // Month 0 (starting with zero wealth) 
+
+      for (let month = 1; month <= (timeHorizon_0 * 1.4); month++) {
+        let currentWealth_0 = wealthData_0[month - 1] + monthlyInvestment;
+        wealthData_0.push(currentWealth_0);
+
+        let currentWealth_x = (wealthData_x[month - 1] * (1 + (interestRate_x / 12 / 100))) + monthlyInvestment;
+        wealthData_x.push(currentWealth_x);
+      }
+      console.log(wealthData_x)
+
+      // 4. Chart.js setup and rendering
+      // Chart.js configuration ... (modify your labels array accordingly) ...
+
+      // Determine the screen size
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+      const labels = Array.from({
+        length: (timeHorizon_0 * 1.4) + 1
+      }, (_, i) => `${i}`);
+      const data = {
+        labels: labels,
+        datasets: [{
+            label: 'No interest', // Descriptive label
+            data: wealthData_0,
+            borderColor: '#19535f', // Styling options
+            backgroundColor: '#19535f', // Styling options
+            borderWidth: isMobile ? 2 : 8, // Smaller size for mobile ,
+            padding: 20
+          },
+          {
+            label: 'With interest', // Descriptive label
+            data: wealthData_x,
+            borderColor: '#ee2b44', // Styling options
+            backgroundColor: '#ee2b44', // Styling options
+            borderWidth: isMobile ? 2 : 8, // Smaller size for mobile ,
+            borderRadius: 2,
+            padding: 20
+          }
+        ]
+      };
+
+
+      if (myChart) { // Chart exists, so update with the new data
+        myChart.data = data; // Modify existing chart data
+        myChart.update(); // Force Chart.js to re-render
+      } else { //  Chart hasn't been created yet
+        const ctx = document.getElementById('wealthChart').getContext('2d');
+        myChart = new Chart(ctx, {
+          type: 'line',
+          data: data,
+          options: {
+            maintainAspectRatio: false, // This will allow CSS to control the chart dimensions
+            // aspectRatio: 2, // Example: Make the chart wider than it is tall
+            animation: {
+              duration: 1000, // Sets animation duration in milliseconds
+              easing: 'easeInOutCubic', // Easing function (e.g., 'linear', 'easeOutBounce', 'easeOutBack', easeInOutCubic.)
+            },
+            plugins: {
+              legend: {
+                //display: true, // This will hide/show the legend
+                labels: {
+                  padding: 20, // Add padding between legend items
+                  font: {
+                    size: isMobile ? 12 : 20, // Smaller size for mobile 
+                    //weight: bold
+                  },
+                  //padding: 120
+                },
+              }
+            },
+            title: {
+              display: true,
+              text: 'Your Chart Title',
+              font: { // Specify font settings
+                size: isMobile ? 12 : 24 // Smaller size for mobile 
+              }
+            },
+            scales: {
+              x: { // Styling the X-axis labels
+                title: {
+                  display: true,
+                  text: 'Months',
+                  font: {
+                    size: isMobile ? 14 : 24 // Smaller size for mobile
+                  }
+                },
+                ticks: {
+                  maxRotation: 0, // This disables automatic rotation!
+                  font: {
+                    size: isMobile ? 12 : 20 // Smaller size for mobile
+                  },
+                  callback: function(value, index, values) {
+                    return index % 3 === 0 ? value : ''; // Show every sixth label
+                  }
+                }
+              },
+              y: { // Styling the Y-axis labels
+                title: {
+                  display: false,
+                  text: '$',
+                  font: {
+                    size: isMobile ? 12 : 24 // Smaller size for mobile
+                  }
+                },
+                ticks: {
+                  font: {
+                    size: isMobile ? 12 : 20 // Smaller size for mobile
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      targetWealthValue.textContent = targetWealthSlider.value;
+      monthlyInvestmentValue.textContent = monthlyInvestmentSlider.value;
+      interestRateValue_x.textContent = interestRateSlider_x.value;
+
+      // Display monthlyInvestment
+      document.getElementById('timeHorizonValue_0').textContent = timeHorizon_0.toFixed(0);
+      document.getElementById('timeHorizonValue_x').textContent = timeHorizon_x.toFixed(1);
+
+      //  Console Log for Debugging!
+      //console.log(targetWealthValue, timeHorizonValue, interestRateValue);
+
+      // Now highlight the new target wealth
+      //let targetIndex = timeHorizon_0;
+      updateChartHighlight(myChart, timeHorizon_0.toFixed(0), timeHorizon_x.toFixed(0));
+    }
+
+    // Initial display update
+    updateDisplayAndChart();
+
+    function updateChartHighlight(chart, targetIndex0, targetIndex1) {
+      // Assuming your dataset is the first one and 'data' is an array of your wealth accumulation per month
+      let dataset0 = chart.data.datasets[0];
+      let dataset1 = chart.data.datasets[1];
+
+      // Set default point styles
+      dataset0.pointRadius = new Array(dataset0.data.length).fill(3); // Default radius for all points
+      dataset0.pointBackgroundColor = new Array(dataset0.data.length).fill('rgba(0, 0, 0, 0.1)'); // Default color for all points
+      dataset1.pointRadius = new Array(dataset1.data.length).fill(3); // Default radius for all points
+      dataset1.pointBackgroundColor = new Array(dataset1.data.length).fill('rgba(0, 0, 0, 0.1)'); // Default color for all points
+
+      // Highlight the target data point
+      dataset0.pointRadius[targetIndex0] = 15; // Larger radius for the target point
+      dataset0.pointBackgroundColor[targetIndex0] = '#ffb100'; // Highlight color for the target point
+      dataset1.pointRadius[targetIndex1] = 15; // Larger radius for the target point
+      dataset1.pointBackgroundColor[targetIndex1] = '#ffb100'; // Highlight color for the target point
+
+
+      // Update the chart
+      chart.update();
+    }
+
+    // Add event listeners to update when sliders are changed  
+    targetWealthSlider.addEventListener('input', updateDisplayAndChart);
+    monthlyInvestmentSlider.addEventListener('input', updateDisplayAndChart);
+    interestRateSlider_x.addEventListener('input', updateDisplayAndChart);
+
+    monthlyInvestmentSlider.addEventListener('input', updateChartHighlight);
+
+    // Event listeners for currency buttons
+    //USD
+    document.getElementById('usdButton').addEventListener('click', function() {
+      updateSliderCurrency(500, 10000, 500, 4500, 50, 1000, 50, 200); // Update the slider values for USD
+      updateCurrencySymbols('$');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.querySelectorAll('currencySymbol').textContent = '$'; // Update to USD symbol
+    });
+
+    //EUR
+    document.getElementById('eurButton').addEventListener('click', function() {
+      updateSliderCurrency(1600, 8000, 400, 4500, 100, 1500, 100, 500); // Update the slider values for EUR
+      updateCurrencySymbols('€');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = '€'; // Update to EUR symbol
+    });
+
+    //GBP
+    document.getElementById('gbpButton').addEventListener('click', function() {
+      updateSliderCurrency(1000, 9000, 500, 4000, 40, 800, 50, 300); // Update the slider values for GBP
+      updateCurrencySymbols('£');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = '£'; // Update to GBP symbol
+    });
+
+    //INR
+    document.getElementById('inrButton').addEventListener('click', function() {
+      updateSliderCurrency(16000, 80000, 4000, 45000, 1000, 15000, 1000, 5000); // Update the slider values for INR
+      updateCurrencySymbols('INR ');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = 'INR'; // Update to INR symbol
+    });
+
+    // Function to update all elements with the 'currency-symbol' class
+    function updateCurrencySymbols(symbol) {
+      document.querySelectorAll('.currencySymbol').forEach(function(elem) {
+        elem.textContent = symbol;
+      });
+    }
+
+    // Set the default currency symbol on page load
+    document.addEventListener("DOMContentLoaded", function() {
+      updateCurrencySymbols('$'); // Default to USD
+    });
+
+  </script>
+
+</html>
