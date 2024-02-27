@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
+  </head>
+  <div>
+    <div id="calculator-container">
+      <div id="slider-container">
+        <div id="currency-selection">
+          <button id="usdButton" title="United States Dollar" class="currency-button">USD</button>
+          <button id="eurButton" title="Euro" class="currency-button">EUR</button>
+          <button id="gbpButton" title="British Pound" class="currency-button">GBP</button>
+          <button id="inrButton" title="Indian Rupee" class="currency-button">INR</button>
+        </div>
+        <div class="slider-container">
+
+          <label for="accountBalanceSlider">Account Balance: <span class="currencySymbol"></span></label>
+          <span id="accountBalanceValue"></span>
+          <input type="range" id="accountBalanceSlider" min="100" max="10000" step="100" value="2000">
+
+        </div>
+        <div id="investment-info-container">
+          <p id="investment-info-text">Your prizes are:<br>
+            <span class="currencySymbol"></span><span id="prizeValue_1"></span>,
+            <span class="currencySymbol"></span><span id="prizeValue_2"></span>,
+            <span class="currencySymbol"></span><span id="prizeValue_3"></span>,
+            <span class="currencySymbol"></span><span id="prizeValue_4"></span> </p>
+          <div id="prizeImageContainer">
+          <img id="prizeImage1" alt="Prize Image 1">
+          <img id="prizeImage2" alt="Prize Image 2">
+          <img id="prizeImage3" alt="Prize Image 3">
+          <img id="prizeImage4" alt="Prize Image 4"></div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .currency-button {
+      background-color: #ffb100;
+      /*border-color: #ffb100;*/
+      border: 3px solid #0d0221;
+      border-radius: 25px;
+      padding: 12px 18px;
+      margin: 5px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* For mobile screens */
+    @media (max-width: 600px) {
+      .currency-button {
+        background-color: #ffb100;
+        /*border-color: #ffb100;*/
+        border: 3px solid #0d0221;
+        border-radius: 15px;
+        padding: 8px 15px;
+        margin: 5px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    }
+
+    #calculator-container {
+      /* Targets the new parent container */
+      display: flex;
+      /*grid-template-columns: 250px 1fr;
+      /* Column 1 (sliders): 250px, Column 2 (chart): rest of space */
+      flex-direction: column;
+      /*justify-content: flex-start; */
+      gap: 40px;
+      /*  Spacing between the columns */
+    }
+
+    @media (min-width: 600px) {
+
+      /* Adjust the breakpoint as needed */
+      #calculator-container {
+        /*flex-direction: row;*/
+        display: flex;
+        /* Ensure vertical stacking on small screens */
+        /* grid-template-columns: 350px 1fr; */
+        /* Define column widths (optional) */
+        align-items: start;
+      }
+    }
+
+    #slider-container input[type="range"] {
+      -webkit-appearance: none;
+      /* Removes default styling (important!) */
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 10px;
+      /* Add some spacing below */
+      margin-bottom: 30px;
+      /* Add some spacing below */
+      width: 100%;
+      /* Important: Ensure full width */
+      overflow: hidden;
+      /*background-color: #eaeaea;*/
+      height: 30px;
+      /* Adjust the height */
+      border-radius: 3px;
+    }
+
+    #slider-container input[type="range"]::-webkit-slider-runnable-track {
+      /*background: #e0e0e0;
+      /* Light gray track color */
+      /*background-color: #ddd;*/
+      /* Цвет фона ползунка */
+      /*opacity: 0.7;*/
+      /* border: none; /* Убираем границу */
+      border-radius: 2px;
+      height: 100%;
+      /*background: linear-gradient(to right, #ee2b44 0%, #ee2b44 50%, #ddd 50%, #ddd 100%);*/
+    }
+
+    #slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background: #ee2b44;
+      /* Red thumb color */
+      height: 30px;
+      width: 12px;
+      /*border-radius: 5px;*/
+      /* Creates a circle */
+      margin-top: 0px;
+    }
+
+    #slider-container label {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0D0221;
+      /*  Example Color */
+    }
+
+    #slider-container span {
+      font-size: 22px;
+      font-weight: bold;
+      /* Set your desired font size here */
+    }
+
+    #investment-info-container {
+      display: block;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 0 auto;
+      width: 100%;
+      margin-top: 50px;
+      /* Add some spacing below */
+      margin-bottom: 10px;
+      text-align: left;
+      /* Add some spacing below */
+      /*flex-grow: 1; /* Allows the investment container to expand vertically */
+    }
+
+    #prizeImageContainer img {
+      max-width: 100%;
+      height: auto;
+      max-height: 200px;
+      /* Set your desired maximum height */
+    }
+
+  </style>
+
+
+  <script>
+    function displayImage(prizeValue) {
+      if (prizeValue >= 0 && prizeValue <= 50) {
+        return "https://cdn-icons-png.freepik.com/512/393/393328.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 51 && prizeValue <= 100) {
+        return "https://cdn-icons-png.freepik.com/512/2357/2357063.png?uid=P58585600&ga=GA1.2.318485066.1708943128&";
+      } else if (prizeValue >= 101 && prizeValue <= 500) {
+        return "https://cdn-icons-png.freepik.com/512/4358/4358295.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 501 && prizeValue <= 2000) {
+        return "https://cdn-icons-png.freepik.com/512/1841/1841215.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 2001 && prizeValue <= 4000) {
+        return "https://cdn-icons-png.freepik.com/512/3867/3867979.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 4001) {
+        return "https://cdn-icons-png.freepik.com/512/2555/2555013.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else {
+        return "https://cdn-icons-png.freepik.com/512/f2555/2555013.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } // error state is the car
+
+      //updateDisplayAndChart();
+
+    }
+
+    // Assuming you have your prize values in variables like prizeValue_1, etc.
+    let imageSrc1 = displayImage(parseFloat(document.getElementById('prizeValue_1').textContent));
+    let imageSrc2 = displayImage(parseFloat(document.getElementById('prizeValue_2').textContent));
+    let imageSrc3 = displayImage(parseFloat(document.getElementById('prizeValue_3').textContent));
+    let imageSrc4 = displayImage(parseFloat(document.getElementById('prizeValue_4').textContent));
+
+    // Update your HTML to use the imageSrc
+    let imageHtml = `
+  <img src="${imageSrc1}" alt="Prize Image 1">
+  <img src="${imageSrc2}" alt="Prize Image 2">
+  <img src="${imageSrc3}" alt="Prize Image 3">
+  <img src="${imageSrc4}" alt="Prize Image 4">
+`;
+    // Add this imageHtml into your desired container element in the document.
+
+    // Get the container and insert the image
+    /*     let container = document.getElementById("prizeImageContainer");
+        container.innerHTML = imageHtml; */
+
+
+
+    //function setCurrencySymbol(symbol) {
+    //  document.getElementById('currencySymbol').textContent = symbol;
+    //}
+
+    // Function to update slider properties
+    function updateSliderCurrency(min, max, step, value) {
+
+      const accountBalanceSlider = document.getElementById('accountBalanceSlider');
+      accountBalanceSlider.min = min;
+      accountBalanceSlider.max = max;
+      accountBalanceSlider.step = step;
+      accountBalanceSlider.value = value;
+
+      // Update display to reflect changes
+      updateDisplayAndChart();
+    }
+
+    // Update the values for the slider fill 
+    function updateSliderFill(slider) {
+      const percentage = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, #ed7282 ${percentage}%, #eaeaea ${percentage}%)`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider); // Set initial fill
+        slider.addEventListener('input', function() {
+          updateSliderFill(this);
+        });
+        // Listener for clicking on the slider
+        slider.addEventListener('change', function() {
+          updateSliderFill(this);
+        });
+      });
+    });
+
+    //document.addEventListener('DOMContentLoaded', function() {
+    //  setCurrencySymbol('$');
+    //});
+
+    // Declare the variables here with initial values if desired: 
+    let accountBalance; // You can use let or const
+    let myChart; //  A variable to hold a reference to your Chart.js chart
+
+    function updateDisplayAndChart() {
+      // 1. Fetch slider values
+      const accountBalanceSlider = document.getElementById('accountBalanceSlider');
+      const accountBalanceValue = document.getElementById('accountBalanceValue');
+
+      accountBalance = parseFloat(accountBalanceSlider.value);
+      //console.log(targetWealth, timeHorizon, interestRate);
+
+      // 2. Perform DCA calculation
+      let prize_1;
+      let prize_2;
+      let prize_3;
+      let prize_4;
+
+      // Calculation section:
+      prize_1 = accountBalance * 1;
+      prize_2 = accountBalance * 0.1;
+      prize_3 = accountBalance * 0.01;
+      prize_4 = accountBalance * 0.001;
+
+      accountBalanceValue.textContent = accountBalanceSlider.value;
+
+      // Display monthlyInvestment
+      document.getElementById('prizeValue_1').textContent = prize_1.toFixed(2);
+      document.getElementById('prizeValue_2').textContent = prize_2.toFixed(2);
+      document.getElementById('prizeValue_3').textContent = prize_3.toFixed(2);
+      document.getElementById('prizeValue_4').textContent = prize_4.toFixed(2);
+
+      // Get image elements by their IDs or class
+      let imageElem1 = document.getElementById('prizeImage1');
+      let imageElem2 = document.getElementById('prizeImage2');
+      let imageElem3 = document.getElementById('prizeImage3');
+      let imageElem4 = document.getElementById('prizeImage4');
+
+      // Call displayImage for each prize and set the image src
+      imageElem1.src = displayImage(prize_1);
+      imageElem2.src = displayImage(prize_2);
+      imageElem3.src = displayImage(prize_3);
+      imageElem4.src = displayImage(prize_4);
+
+
+    }
+
+    // Initial display update
+    updateDisplayAndChart();
+
+    // Add event listeners to update when sliders are changed  
+    accountBalanceSlider.addEventListener('input', updateDisplayAndChart);
+
+    // Event listeners for currency buttons
+    //USD
+    document.getElementById('usdButton').addEventListener('click', function() {
+      updateSliderCurrency(100, 10000, 100, 2000); // Update the slider values for USD
+      updateCurrencySymbols('$');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.querySelectorAll('currencySymbol').textContent = '$'; // Update to USD symbol
+    });
+
+    //EUR
+    document.getElementById('eurButton').addEventListener('click', function() {
+      updateSliderCurrency(100, 12000, 100, 1500); // Update the slider values for EUR
+      updateCurrencySymbols('€');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = '€'; // Update to EUR symbol
+    });
+
+    //GBP
+    document.getElementById('gbpButton').addEventListener('click', function() {
+      updateSliderCurrency(100, 8000, 100, 1400); // Update the slider values for GBP
+      updateCurrencySymbols('£');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = '£'; // Update to GBP symbol
+    });
+
+    //INR
+    document.getElementById('inrButton').addEventListener('click', function() {
+      updateSliderCurrency(10000, 150000, 10000, 50000); // Update the slider values for INR
+      updateCurrencySymbols('INR ');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = 'INR'; // Update to INR symbol
+    });
+
+    // Function to update all elements with the 'currency-symbol' class
+    function updateCurrencySymbols(symbol) {
+      document.querySelectorAll('.currencySymbol').forEach(function(elem) {
+        elem.textContent = symbol;
+      });
+    }
+
+    // Set the default currency symbol on page load
+    document.addEventListener("DOMContentLoaded", function() {
+      updateCurrencySymbols('$'); // Default to USD
+    });
+
+  </script>
+
+</html>
