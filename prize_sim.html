@@ -20,7 +20,7 @@
           <span id="initialDepositValue"></span>
           <input type="range" id="initialDepositSlider" min="0" max="1500" step="100" value="500">
 
-          <label for="monthlyInvestmentSlider">Monthly Budget: <span class="currencySymbol"></span></label>
+          <label for="monthlyInvestmentSlider">Monthly Contribution: <span class="currencySymbol"></span></label>
           <span id="monthlyInvestmentValue"></span>
           <input type="range" id="monthlyInvestmentSlider" min="50" max="500" step="50" value="100">
 
@@ -41,6 +41,12 @@
   </div>
 
   <style>
+
+    #currency-selection {
+    display: flex; /* Enable flexbox layout */
+    flex-wrap: nowrap; /* Prevent wrapping to multiple lines */
+}
+    
     .currency-button {
       background-color: #ffb100;
       /*border-color: #ffb100;*/
