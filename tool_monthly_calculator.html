@@ -19,9 +19,9 @@
           <span id="targetWealthValue"></span>
           <input type="range" id="targetWealthSlider" min="500" max="10000" step="500" value="4000">
 
-          <label for="monthlyInvestmentSlider">Monthly Budget: <span class="currencySymbol"></span></label>
-          <span id="monthlyInvestmentValue"></span>
-          <input type="range" id="monthlyInvestmentSlider" min="50" max="1000" step="50" value="200">
+          <label for="timeHorizonSlider">Time Horizon (months): </label>
+          <span id="timeHorizonValue"></span>
+          <input type="range" id="timeHorizonSlider" min="12" max="60" step="3" value="24">
 
           <label for="interestRateSlider_x">Interest Rate (%): </label>
           <span id="interestRateValue_x"></span>
@@ -29,7 +29,7 @@
 
         </div>
         <div id="investment-info-container">
-          <p id="investment-info-text">Without interest, you'll have to wait <span id="timeHorizonValue_0"></span>  months. <br>With interest, you should wait <span id="timeHorizonValue_x"></span> months.</p>
+          <p id="investment-info-text">Without interest, you should save <span class="currencySymbol"></span><span id="monthlyInvestmentValue_0"></span> each month. <br>With interest, you should save <span class="currencySymbol"></span><span id="monthlyInvestmentValue_x"></span>.</p>
         </div>
       </div>
       <div id="chart-container">
@@ -39,12 +39,14 @@
   </div>
 
   <style>
-
     #currency-selection {
-    display: flex; /* Enable flexbox layout */
-    flex-wrap: nowrap; /* Prevent wrapping to multiple lines */
-}
-    
+      display: flex;
+      /* Enable flexbox layout */
+      flex-wrap: nowrap;
+      /* Prevent wrapping to multiple lines */
+    }
+
+
     .currency-button {
       background-color: #ffb100;
       /*border-color: #ffb100;*/
@@ -191,18 +193,12 @@
     //}
 
     // Function to update slider properties
-    function updateSliderCurrency(minW, maxW, stepW, valueW, minI, maxI, stepI, valueI) {
+    function updateSliderCurrency(min, max, step, value) {
       const targetWealthSlider = document.getElementById('targetWealthSlider');
-      targetWealthSlider.min = minW;
-      targetWealthSlider.max = maxW;
-      targetWealthSlider.step = stepW;
-      targetWealthSlider.value = valueW;
-      
-      const monthlyInvestmentSlider = document.getElementById('monthlyInvestmentSlider');
-      monthlyInvestmentSlider.min = minI;
-      monthlyInvestmentSlider.max = maxI;
-      monthlyInvestmentSlider.step = stepI;
-      monthlyInvestmentSlider.value = valueI;
+      targetWealthSlider.min = min;
+      targetWealthSlider.max = max;
+      targetWealthSlider.step = step;
+      targetWealthSlider.value = value;
 
       // Update display to reflect changes
       updateDisplayAndChart();
@@ -233,43 +229,38 @@
     //});
 
     // Declare the variables here with initial values if desired: 
-    let targetWealth, monthlyInvestment, interestRate; // You can use let or const
+    let targetWealth, timeHorizon, interestRate; // You can use let or const
     let myChart; //  A variable to hold a reference to your Chart.js chart
 
     function updateDisplayAndChart() {
       // 1. Fetch slider values
       const targetWealthSlider = document.getElementById('targetWealthSlider');
       const targetWealthValue = document.getElementById('targetWealthValue');
-      const monthlyInvestmentSlider = document.getElementById('monthlyInvestmentSlider');
-      const monthlyInvestmentValue = document.getElementById('monthlyInvestmentValue');
+      const timeHorizonSlider = document.getElementById('timeHorizonSlider');
+      const timeHorizonValue = document.getElementById('timeHorizonValue');
       const interestRateSlider_x = document.getElementById('interestRateSlider_x');
       const interestRateValue_x = document.getElementById('interestRateValue_x');
 
       targetWealth = parseFloat(targetWealthSlider.value);
-      monthlyInvestment = parseFloat(monthlyInvestmentSlider.value);
+      timeHorizon = parseFloat(timeHorizonSlider.value);
       interestRate_x = parseFloat(interestRateSlider_x.value);
 
       //console.log(targetWealth, timeHorizon, interestRate);
 
       // 2. Perform DCA calculation
-      let timeHorizon_0;
-      let timeHorizon_x;
-      let r;
+      let monthlyInvestment_0;
+      let monthlyInvestment_x;
 
       // Calculation section:
-      timeHorizon_0 = targetWealth / monthlyInvestment;
+      monthlyInvestment_0 = targetWealth / timeHorizon;
 
       if (interestRate_x === 0) {
         // Special case: Use this formula when interest rate is 0
-        timeHorizon_x = targetWealth / monthlyInvestment;
+        monthlyInvestment_x = targetWealth / timeHorizon;
       } else {
         // General case: Use this formula when interest rate is not 0
-        r = (interestRate_x / 12 / 100)
-        //timeHorizon_x = (targetWealth * r) / (Math.pow(1 + r, monthlyInvestment) - 1);
-        timeHorizon_x = (Math.log(((targetWealth*r)/monthlyInvestment)+1))/(Math.log(1+r));
+        monthlyInvestment_x = (targetWealth * (interestRate_x / 12 / 100)) / (Math.pow(1 + (interestRate_x / 12 / 100), timeHorizon) - 1);
       }
-      
-      
 
 
       // 3. Create wealth data for the chart
@@ -279,11 +270,11 @@
       wealthData_0.push(0); // Month 0 (starting with zero wealth) 
       wealthData_x.push(0); // Month 0 (starting with zero wealth) 
 
-      for (let month = 1; month <= (timeHorizon_0 * 1.4); month++) {
-        let currentWealth_0 = wealthData_0[month - 1] + monthlyInvestment;
+      for (let month = 1; month <= (timeHorizon * 1.4); month++) {
+        let currentWealth_0 = wealthData_0[month - 1] + monthlyInvestment_0;
         wealthData_0.push(currentWealth_0);
 
-        let currentWealth_x = (wealthData_x[month - 1] * (1 + (interestRate_x / 12 / 100))) + monthlyInvestment;
+        let currentWealth_x = (wealthData_x[month - 1] * (1 + (interestRate_x / 12 / 100))) + monthlyInvestment_x;
         wealthData_x.push(currentWealth_x);
       }
       console.log(wealthData_x)
@@ -292,10 +283,10 @@
       // Chart.js configuration ... (modify your labels array accordingly) ...
 
       // Determine the screen size
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const isMobile = window.matchMedia("(max-width: 600px)").matches;
 
       const labels = Array.from({
-        length: (timeHorizon_0 * 1.4) + 1
+        length: (timeHorizon * 1.4) + 1
       }, (_, i) => `${i}`);
       const data = {
         labels: labels,
@@ -394,41 +385,54 @@
       }
 
       targetWealthValue.textContent = targetWealthSlider.value;
-      monthlyInvestmentValue.textContent = monthlyInvestmentSlider.value;
+      timeHorizonValue.textContent = timeHorizonSlider.value;
       interestRateValue_x.textContent = interestRateSlider_x.value;
 
       // Display monthlyInvestment
-      document.getElementById('timeHorizonValue_0').textContent = timeHorizon_0.toFixed(0);
-      document.getElementById('timeHorizonValue_x').textContent = timeHorizon_x.toFixed(1);
+      document.getElementById('monthlyInvestmentValue_0').textContent = monthlyInvestment_0.toFixed(0);
+      document.getElementById('monthlyInvestmentValue_x').textContent = monthlyInvestment_x.toFixed(0);
 
       //  Console Log for Debugging!
       //console.log(targetWealthValue, timeHorizonValue, interestRateValue);
 
       // Now highlight the new target wealth
-      //let targetIndex = timeHorizon_0;
-      updateChartHighlight(myChart, timeHorizon_0.toFixed(0), timeHorizon_x.toFixed(0));
+      let targetIndex = parseInt(timeHorizonSlider.value) - 1;
+      updateChartHighlight(myChart, targetIndex);
     }
 
     // Initial display update
     updateDisplayAndChart();
 
-    function updateChartHighlight(chart, targetIndex0, targetIndex1) {
+    function updateChartHighlight(chart, targetIndex) {
       // Assuming your dataset is the first one and 'data' is an array of your wealth accumulation per month
-      let dataset0 = chart.data.datasets[0];
-      let dataset1 = chart.data.datasets[1];
+      let dataset = chart.data.datasets[0];
 
       // Set default point styles
-      dataset0.pointRadius = new Array(dataset0.data.length).fill(3); // Default radius for all points
-      dataset0.pointBackgroundColor = new Array(dataset0.data.length).fill('#19535f'); // Default color for all points
-      dataset1.pointRadius = new Array(dataset1.data.length).fill(3); // Default radius for all points
-      dataset1.pointBackgroundColor = new Array(dataset1.data.length).fill('#ee2b44'); // Default color for all points
+      dataset.pointRadius = new Array(dataset.data.length).fill(3); // Default radius for all points
+      dataset.pointBackgroundColor = new Array(dataset.data.length).fill('#19535f'); // Default color for all points
 
       // Highlight the target data point
-      dataset0.pointRadius[targetIndex0] = 15; // Larger radius for the target point
-      dataset0.pointBackgroundColor[targetIndex0] = '#ffb100'; // Highlight color for the target point
-      dataset1.pointRadius[targetIndex1] = 15; // Larger radius for the target point
-      dataset1.pointBackgroundColor[targetIndex1] = '#ffb100'; // Highlight color for the target point
+      dataset.pointRadius[targetIndex] = 15; // Larger radius for the target point
+      dataset.pointBackgroundColor[targetIndex] = '#ffb100'; // Highlight color for the target point
 
+      // Add new annotation
+      chart.options.plugins.annotation = chart.options.plugins.annotation || {
+        annotations: {
+          annotation1: {
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y',
+            value: dataset[targetIndex],
+            borderColor: '#ffb100',
+            borderWidth: 5,
+            label: {
+              content: "Target Wealth",
+              enabled: true,
+              position: "center" // Place label at the end of the line 
+            }
+          }
+        }
+      };
 
       // Update the chart
       chart.update();
@@ -436,15 +440,15 @@
 
     // Add event listeners to update when sliders are changed  
     targetWealthSlider.addEventListener('input', updateDisplayAndChart);
-    monthlyInvestmentSlider.addEventListener('input', updateDisplayAndChart);
+    timeHorizonSlider.addEventListener('input', updateDisplayAndChart);
     interestRateSlider_x.addEventListener('input', updateDisplayAndChart);
 
-    monthlyInvestmentSlider.addEventListener('input', updateChartHighlight);
+    timeHorizonSlider.addEventListener('input', updateChartHighlight);
 
     // Event listeners for currency buttons
     //USD
     document.getElementById('usdButton').addEventListener('click', function() {
-      updateSliderCurrency(500, 10000, 500, 4500, 50, 1000, 50, 200); // Update the slider values for USD
+      updateSliderCurrency(500, 10000, 500, 4500); // Update the slider values for USD
       updateCurrencySymbols('$');
 
       // Fetch each slider and update its fill
@@ -457,7 +461,7 @@
 
     //EUR
     document.getElementById('eurButton').addEventListener('click', function() {
-      updateSliderCurrency(1600, 8000, 400, 4500, 100, 1500, 100, 500); // Update the slider values for EUR
+      updateSliderCurrency(1600, 8000, 400, 4400); // Update the slider values for EUR
       updateCurrencySymbols('€');
 
       // Fetch each slider and update its fill
@@ -470,7 +474,7 @@
 
     //GBP
     document.getElementById('gbpButton').addEventListener('click', function() {
-      updateSliderCurrency(1000, 9000, 500, 4000, 40, 800, 50, 300); // Update the slider values for GBP
+      updateSliderCurrency(1000, 9000, 500, 4000); // Update the slider values for GBP
       updateCurrencySymbols('£');
 
       // Fetch each slider and update its fill
@@ -483,7 +487,7 @@
 
     //INR
     document.getElementById('inrButton').addEventListener('click', function() {
-      updateSliderCurrency(16000, 80000, 4000, 45000, 1000, 15000, 1000, 5000); // Update the slider values for INR
+      updateSliderCurrency(16000, 80000, 4000, 44000); // Update the slider values for INR
       updateCurrencySymbols('INR ');
 
       // Fetch each slider and update its fill
