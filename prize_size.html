@@ -28,10 +28,10 @@
             <span class="currencySymbol"></span><span id="prizeValue_3"></span>,
             <span class="currencySymbol"></span><span id="prizeValue_4"></span> </p>
           <div id="prizeImageContainer">
-          <img id="prizeImage1" alt="Prize Image 1">
-          <img id="prizeImage2" alt="Prize Image 2">
-          <img id="prizeImage3" alt="Prize Image 3">
-          <img id="prizeImage4" alt="Prize Image 4"></div>
+            <img id="prizeImage1" alt="Prize Image 1">
+            <img id="prizeImage2" alt="Prize Image 2">
+            <img id="prizeImage3" alt="Prize Image 3">
+            <img id="prizeImage4" alt="Prize Image 4"></div>
 
 
         </div>
@@ -176,20 +176,24 @@
 
   <script>
     function displayImage(prizeValue) {
-      if (prizeValue >= 0 && prizeValue <= 50) {
-        return "https://cdn-icons-png.freepik.com/512/393/393328.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      if (prizeValue >= 0 && prizeValue <= 9) {
+        return "https://cdn-icons-png.freepik.com/512/6645/6645157.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 10 && prizeValue <= 50) {
+        return "https://cdn-icons-png.freepik.com/512/8781/8781564.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
       } else if (prizeValue >= 51 && prizeValue <= 100) {
-        return "https://cdn-icons-png.freepik.com/512/2357/2357063.png?uid=P58585600&ga=GA1.2.318485066.1708943128&";
+        return "https://cdn-icons-png.freepik.com/512/6645/6645091.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
       } else if (prizeValue >= 101 && prizeValue <= 500) {
-        return "https://cdn-icons-png.freepik.com/512/4358/4358295.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
-      } else if (prizeValue >= 501 && prizeValue <= 2000) {
-        return "https://cdn-icons-png.freepik.com/512/1841/1841215.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+        return "https://cdn-icons-png.freepik.com/512/3438/3438081.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 501 && prizeValue <= 1000) {
+        return "https://cdn-icons-png.freepik.com/512/3441/3441558.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+      } else if (prizeValue >= 1001 && prizeValue <= 2000) {
+        return "https://cdn-icons-png.freepik.com/512/6644/6644664.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
       } else if (prizeValue >= 2001 && prizeValue <= 4000) {
-        return "https://cdn-icons-png.freepik.com/512/3867/3867979.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+        return "https://cdn-icons-png.freepik.com/512/3438/3438156.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
       } else if (prizeValue >= 4001) {
-        return "https://cdn-icons-png.freepik.com/512/2555/2555013.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+        return "https://cdn-icons-png.freepik.com/512/6491/6491292.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
       } else {
-        return "https://cdn-icons-png.freepik.com/512/f2555/2555013.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
+        return "https://cdn-icons-png.freepik.com/512/6dead491/6491292.png?uid=P58585600&ga=GA1.1.318485066.1708943128&";
       } // error state is the car
 
       //updateDisplayAndChart();
