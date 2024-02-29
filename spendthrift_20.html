@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <div>
+    <div id="calculator-container">
+      <div id="slider-container">
+
+        <div id="currency-selection">
+          <button id="usdButton" title="United States Dollar" class="currency-button">USD</button>
+          <button id="eurButton" title="Euro" class="currency-button">EUR</button>
+          <button id="gbpButton" title="British Pound" class="currency-button">GBP</button>
+          <button id="inrButton" title="Indian Rupee" class="currency-button">INR</button>
+        </div>
+
+        <div class="slider-container">
+          <label for="initIncomeSlider">Starting Income: <span class="currencySymbol"></span></label>
+          <span id="initIncomeValue"></span>
+          <input type="range" id="initIncomeSlider" min="10000" max="80000" step="2000" value="20000">
+
+          <label for="finIncomeSlider">Final Income: <span class="currencySymbol"></span></label>
+          <span id="finIncomeValue"></span>
+          <input type="range" id="finIncomeSlider" min="30000" max="250000" step="5000" value="50000">
+
+          <label for="saveFrxnSlider">Investment Percentage (%): </label>
+          <span id="saveFrxnValue"></span>
+          <input type="range" id="saveFrxnSlider" min="0" max="30" step="2" value="10">
+        </div>
+
+        <!--         <div id="investment-info-container">
+          <p id="investment-info-text">Without interest, you should save <span class="currencySymbol"></span><span id="monthlyInvestmentValue_20"></span> each month. <br>With interest, you should save <span class="currencySymbol"></span><span id="monthlyInvestmentValue_20"></span>.</p>
+        </div> -->
+      </div>
+
+      <div id="chart-container">
+        <canvas id="wealthChart"></canvas>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    #currency-selection {
+      display: flex;
+      /* Enable flexbox layout */
+      flex-wrap: nowrap;
+      /* Prevent wrapping to multiple lines */
+    }
+
+
+    .currency-button {
+      background-color: #ffb100;
+      /*border-color: #ffb100;*/
+      border: 3px solid #0d0221;
+      border-radius: 25px;
+      padding: 12px 18px;
+      margin: 5px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* For mobile screens */
+    @media (max-width: 600px) {
+      .currency-button {
+        background-color: #ffb100;
+        /*border-color: #ffb100;*/
+        border: 5px solid #0d0221;
+        border-radius: 15px;
+        padding: 8px 15px;
+        margin: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    }
+
+    #calculator-container {
+      /* Targets the new parent container */
+      display: flex;
+      /*grid-template-columns: 250px 1fr;
+      /* Column 1 (sliders): 250px, Column 2 (chart): rest of space */
+      flex-direction: column;
+      /*justify-content: flex-start; */
+      gap: 40px;
+      /*  Spacing between the columns */
+    }
+
+    @media (min-width: 600px) {
+
+      /* Adjust the breakpoint as needed */
+      #calculator-container {
+        /*flex-direction: row;*/
+        display: grid;
+        /* Ensure vertical stacking on small screens */
+        grid-template-columns: 350px 1fr;
+        /* Define column widths (optional) */
+        align-items: start;
+      }
+    }
+
+    #slider-container input[type="range"] {
+      -webkit-appearance: none;
+      /* Removes default styling (important!) */
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 10px;
+      /* Add some spacing below */
+      margin-bottom: 30px;
+      /* Add some spacing below */
+      width: 100%;
+      /* Important: Ensure full width */
+      overflow: hidden;
+      /*background-color: #eaeaea;*/
+      height: 30px;
+      /* Adjust the height */
+      border-radius: 3px;
+    }
+
+    #slider-container input[type="range"]::-webkit-slider-runnable-track {
+      /*background: #e0e0e0;
+      /* Light gray track color */
+      /*background-color: #ddd;*/
+      /* Цвет фона ползунка */
+      /*opacity: 0.7;*/
+      /* border: none; /* Убираем границу */
+      border-radius: 2px;
+      height: 100%;
+      /*background: linear-gradient(to right, #ee2b44 0%, #ee2b44 50%, #ddd 50%, #ddd 100%);*/
+    }
+
+    #slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background: #ee2b44;
+      /* Red thumb color */
+      height: 30px;
+      width: 12px;
+      /*border-radius: 5px;*/
+      /* Creates a circle */
+      margin-top: 0px;
+    }
+
+    #slider-container label {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0D0221;
+      /*  Example Color */
+    }
+
+    #slider-container span {
+      font-size: 22px;
+      font-weight: bold;
+      /* Set your desired font size here */
+    }
+
+    #investment-info-container {
+      display: block;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 0 auto;
+      width: 100%;
+      margin-top: 50px;
+      /* Add some spacing below */
+      margin-bottom: 10px;
+      text-align: left;
+      /* Add some spacing below */
+      /*flex-grow: 1; /* Allows the investment container to expand vertically */
+    }
+
+    #chart-container {
+      width: 100%;
+      height: 600px;
+      /* Chart will take up 70% of its parent container */
+      /*grid-column-start: 2;
+      /* Places chart in the second column */
+    }
+
+    /* For mobile screens */
+    @media (max-width: 600px) {
+      #chart-container {
+        height: 400px;
+      }
+    }
+
+  </style>
+
+
+  <script>
+    //function setCurrencySymbol(symbol) {
+    //  document.getElementById('currencySymbol').textContent = symbol;
+    //}
+
+    // Function to update slider properties
+    function updateSliderCurrency(minI, maxI, stepI, valueI, minF, maxF, stepF, valueF) {
+      const initIncomeSlider = document.getElementById('initIncomeSlider');
+      initIncomeSlider.min = minI;
+      initIncomeSlider.max = maxI;
+      initIncomeSlider.step = stepI;
+      initIncomeSlider.value = valueI;
+
+      const finIncomeSlider = document.getElementById('finIncomeSlider');
+      finIncomeSlider.min = minF;
+      finIncomeSlider.max = maxF;
+      finIncomeSlider.step = stepF;
+      finIncomeSlider.value = valueF;
+
+      // Update display to reflect changes
+      updateDisplayAndChart();
+    }
+
+    // Update the values for the slider fill 
+    function updateSliderFill(slider) {
+      const percentage = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, #ed7282 ${percentage}%, #eaeaea ${percentage}%)`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider); // Set initial fill
+        slider.addEventListener('input', function() {
+          updateSliderFill(this);
+        });
+        // Listener for clicking on the slider
+        slider.addEventListener('change', function() {
+          updateSliderFill(this);
+        });
+      });
+    });
+
+    //document.addEventListener('DOMContentLoaded', function() {
+    //  setCurrencySymbol('$');
+    //});
+
+    // Declare the variables here with initial values if desired: 
+    let initIncome, finIncome, saveFrxn; // You can use let or const
+    let myChart; //  A variable to hold a reference to your Chart.js chart
+
+    function updateDisplayAndChart() {
+      // 1. Fetch slider values
+      const initIncomeSlider = document.getElementById('initIncomeSlider');
+      const initIncomeValue = document.getElementById('initIncomeValue');
+      const finIncomeSlider = document.getElementById('finIncomeSlider');
+      const finIncomeValue = document.getElementById('finIncomeValue');
+      const saveFrxnSlider = document.getElementById('saveFrxnSlider');
+      const saveFrxnValue = document.getElementById('saveFrxnValue');
+
+      initIncome = parseFloat(initIncomeSlider.value / 12);
+      finIncome = parseFloat(finIncomeSlider.value / 12);
+      saveFrxn = parseFloat(saveFrxnSlider.value);
+
+      //console.log(targetWealth, timeHorizon, interestRate);
+
+      // 2. Perform DCA calculation
+      let monthlyInvestment_20;
+      let monthlyInvestment_30;
+      //let saveFrxn_30;
+
+      // Calculation section:
+
+
+
+      // 3. Create wealth data for the chart
+      // Wealth Data Generation
+      //const incomeData = [];
+      const wealthData_20 = [];
+      // Create data array for the second dataset with empty data up to 119
+      const wealthData_30 = new Array(119).fill(null); // Start with empty data for indices 0 to 118
+      const interestRate = 5;
+      const timeHorizon = 540;
+      const timeHorizon_30 = 420;
+
+      let r = interestRate / 12 / 100;
+      let initIncome_30 = initIncome + (((finIncome - initIncome) / timeHorizon) * 120)
+
+      //incomeData.push(initIncome); // Month 0 (starting with zero wealth) 
+      wealthData_20.push(0); // Month 0 (starting with zero wealth) 
+      wealthData_30.push(0); // Month 0 (starting with zero wealth) 
+
+      for (let month = 1; month <= timeHorizon; month++) {
+
+        let income = initIncome + (((finIncome - initIncome) / timeHorizon) * month)
+        //incomeData.push(income);
+        monthlyInvestment_20 = income * (saveFrxn / 100)
+
+        let currentWealth_20 = (wealthData_20[month - 1] * (1 + r)) + monthlyInvestment_20;
+        wealthData_20.push(currentWealth_20);
+      }
+      console.log(wealthData_20)
+
+      let finalWealth = wealthData_20[wealthData_20.length - 1];
+
+			let big_bit = (Math.pow(r + 1, timeHorizon_30) * (finIncome * (r + 1) - initIncome_30 * (r - (timeHorizon_30 * r) + 1))) + initIncome_30 * (r + 1) - finIncome * (r + timeHorizon_30 * r + 1);
+      //let big_bit = 24248;
+
+      let saveFrxn_30 = (finalWealth * timeHorizon_30 * r * r) / big_bit;
+
+      for (let month = 120; month <= timeHorizon; month++) {
+
+        let income = initIncome + (((finIncome - initIncome) / timeHorizon) * month);
+        //incomeData.push(income);
+        monthlyInvestment_30 = income * (saveFrxn_30)
+
+        let currentWealth_30 = (wealthData_30[month - 1] || 0) * (1 + r) + monthlyInvestment_30;
+        wealthData_30.push(currentWealth_30);
+      }
+
+      // 4. Chart.js setup and rendering
+      // Chart.js configuration ... (modify your labels array accordingly) ...
+
+      // Determine the screen size
+      const isMobile = window.matchMedia("(max-width: 600px)").matches;
+
+      const labels = Array.from({
+        length: (timeHorizon) + 1
+      }, (_, i) => `${i}`);
+      const data = {
+        labels: labels,
+        datasets: [{
+            label: 'No interest', // Descriptive label
+            data: wealthData_20,
+            borderColor: '#19535f', // Styling options
+            backgroundColor: '#19535f', // Styling options
+            borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
+            padding: 20
+          },
+          {
+            label: 'With interest', // Descriptive label
+            data: wealthData_30,
+            borderColor: '#ee2b44', // Styling options
+            backgroundColor: '#ee2b44', // Styling options
+            borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
+            borderRadius: 2,
+            padding: 20
+          }
+        ]
+      };
+
+
+      if (myChart) { // Chart exists, so update with the new data
+        myChart.data = data; // Modify existing chart data
+        myChart.update(); // Force Chart.js to re-render
+      } else { //  Chart hasn't been created yet
+        const ctx = document.getElementById('wealthChart').getContext('2d');
+        myChart = new Chart(ctx, {
+          type: 'line',
+          data: data,
+          options: {
+            maintainAspectRatio: false, // This will allow CSS to control the chart dimensions
+            // aspectRatio: 2, // Example: Make the chart wider than it is tall
+            animation: {
+              duration: 1000, // Sets animation duration in milliseconds
+              easing: 'easeInOutCubic', // Easing function (e.g., 'linear', 'easeOutBounce', 'easeOutBack', easeInOutCubic.)
+            },
+            plugins: {
+              legend: {
+                //display: true, // This will hide/show the legend
+                labels: {
+                  padding: 20, // Add padding between legend items
+                  font: {
+                    size: isMobile ? 12 : 20, // Smaller size for mobile 
+                    //weight: bold
+                  },
+                  //padding: 120
+                },
+              }
+            },
+            title: {
+              display: true,
+              text: 'Your Chart Title',
+              font: { // Specify font settings
+                size: isMobile ? 12 : 24 // Smaller size for mobile 
+              }
+            },
+            scales: {
+              x: { // Styling the X-axis labels
+                title: {
+                  display: true,
+                  text: 'Months',
+                  font: {
+                    size: isMobile ? 14 : 24 // Smaller size for mobile
+                  }
+                },
+                ticks: {
+                  maxRotation: 0, // This disables automatic rotation!
+                  font: {
+                    size: isMobile ? 12 : 20 // Smaller size for mobile
+                  },
+                  callback: function(value, index, values) {
+                    return index % 3 === 0 ? value : ''; // Show every sixth label
+                  }
+                }
+              },
+              y: { // Styling the Y-axis labels
+                title: {
+                  display: false,
+                  text: '$',
+                  font: {
+                    size: isMobile ? 12 : 24 // Smaller size for mobile
+                  }
+                },
+                ticks: {
+                  font: {
+                    size: isMobile ? 12 : 20 // Smaller size for mobile
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      initIncomeValue.textContent = initIncomeSlider.value;
+      finIncomeValue.textContent = finIncomeSlider.value;
+      saveFrxnValue.textContent = saveFrxnSlider.value;
+
+      // Display monthlyInvestment
+      //document.getElementById('monthlyInvestmentValue_20').textContent = monthlyInvestment_20.toFixed(0);
+      //document.getElementById('monthlyInvestmentValue_x').textContent = monthlyInvestment_x.toFixed(0);
+
+      //  Console Log for Debugging!
+      //console.log(targetWealthValue, timeHorizonValue, interestRateValue);
+
+      // Now highlight the new target wealth
+      //let targetIndex = parseInt(timeHorizonSlider.value) - 1;
+      //updateChartHighlight(myChart, targetIndex);
+    }
+
+    // Initial display update
+    updateDisplayAndChart();
+
+    function updateChartHighlight(chart, targetIndex) {
+      // Assuming your dataset is the first one and 'data' is an array of your wealth accumulation per month
+      let dataset = chart.data.datasets[0];
+
+      // Set default point styles
+      dataset.pointRadius = new Array(dataset.data.length).fill(3); // Default radius for all points
+      dataset.pointBackgroundColor = new Array(dataset.data.length).fill('#19535f'); // Default color for all points
+
+      // Highlight the target data point
+      dataset.pointRadius[targetIndex] = 15; // Larger radius for the target point
+      dataset.pointBackgroundColor[targetIndex] = '#ffb100'; // Highlight color for the target point
+
+      // Add new annotation
+      chart.options.plugins.annotation = chart.options.plugins.annotation || {
+        annotations: {
+          annotation1: {
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y',
+            value: dataset[targetIndex],
+            borderColor: '#ffb100',
+            borderWidth: 5,
+            label: {
+              content: "Target Wealth",
+              enabled: true,
+              position: "center" // Place label at the end of the line 
+            }
+          }
+        }
+      };
+
+      // Update the chart
+      chart.update();
+    }
+
+    // Add event listeners to update when sliders are changed  
+    initIncomeSlider.addEventListener('input', updateDisplayAndChart);
+    finIncomeSlider.addEventListener('input', updateDisplayAndChart);
+    saveFrxnSlider.addEventListener('input', updateDisplayAndChart);
+
+    //finIncomeSlider.addEventListener('input', updateChartHighlight);
+
+    // Event listeners for currency buttons
+    //USD
+    document.getElementById('usdButton').addEventListener('click', function() {
+      updateSliderCurrency(10000, 80000, 2000, 20000, 30000, 250000, 5000, 50000); // Update the slider values for USD
+      updateCurrencySymbols('$');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.querySelectorAll('currencySymbol').textContent = '$'; // Update to USD symbol
+    });
+
+    //EUR
+    document.getElementById('eurButton').addEventListener('click', function() {
+      updateSliderCurrency(10000, 80000, 2000, 20000, 30000, 250000, 5000, 50000); // Update the slider values for EUR
+      updateCurrencySymbols('€');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = '€'; // Update to EUR symbol
+    });
+
+    //GBP
+    document.getElementById('gbpButton').addEventListener('click', function() {
+      updateSliderCurrency(10000, 80000, 2000, 20000, 30000, 250000, 5000, 50000); // Update the slider values for GBP
+      updateCurrencySymbols('£');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = '£'; // Update to GBP symbol
+    });
+
+    //INR
+    document.getElementById('inrButton').addEventListener('click', function() {
+      updateSliderCurrency(10000, 80000, 2000, 20000, 30000, 250000, 5000, 50000); // Update the slider values for INR
+      updateCurrencySymbols('INR ');
+
+      // Fetch each slider and update its fill
+      const sliders = document.querySelectorAll('.slider-container input[type="range"]');
+      sliders.forEach(slider => {
+        updateSliderFill(slider);
+      });
+      //document.getElementById('currencySymbol').textContent = 'INR'; // Update to INR symbol
+    });
+
+    // Function to update all elements with the 'currency-symbol' class
+    function updateCurrencySymbols(symbol) {
+      document.querySelectorAll('.currencySymbol').forEach(function(elem) {
+        elem.textContent = symbol;
+      });
+    }
+
+    // Set the default currency symbol on page load
+    document.addEventListener("DOMContentLoaded", function() {
+      updateCurrencySymbols('$'); // Default to USD
+    });
+
+  </script>
+
+</html>
