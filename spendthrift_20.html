@@ -18,20 +18,22 @@
         <div class="slider-container">
           <label for="initIncomeSlider">Starting Income: <span class="currencySymbol"></span></label>
           <span id="initIncomeValue"></span>
-          <input type="range" id="initIncomeSlider" min="10000" max="80000" step="2000" value="20000">
+          <input type="range" id="initIncomeSlider" min="10000" max="100000" step="2000" value="20000">
 
           <label for="finIncomeSlider">Final Income: <span class="currencySymbol"></span></label>
           <span id="finIncomeValue"></span>
-          <input type="range" id="finIncomeSlider" min="30000" max="250000" step="5000" value="50000">
+          <input type="range" id="finIncomeSlider" min="30000" max="200000" step="5000" value="60000">
 
           <label for="saveFrxnSlider">Investment Percentage (%): </label>
           <span id="saveFrxnValue"></span>
-          <input type="range" id="saveFrxnSlider" min="0" max="30" step="2" value="10">
+          <input type="range" id="saveFrxnSlider" min="0" max="20" step="1" value="5">
         </div>
 
-        <!--         <div id="investment-info-container">
-          <p id="investment-info-text">Without interest, you should save <span class="currencySymbol"></span><span id="monthlyInvestmentValue_20"></span> each month. <br>With interest, you should save <span class="currencySymbol"></span><span id="monthlyInvestmentValue_20"></span>.</p>
-        </div> -->
+        <div id="investment-info-container">
+          <p id="investment-info-text">If you started saving <span id="saveFrxnValueValue"></span>% at age 20 you would reach a wealth of <span class="currencySymbol"></span><span id="finalWealthValue"></span>
+            <br><br>
+            Starting at age 30 you should save <span id="saveFrxnValue_30"></span>% of your income each month.</p>
+        </div>
       </div>
 
       <div id="chart-container">
@@ -263,8 +265,6 @@
 
       // Calculation section:
 
-
-
       // 3. Create wealth data for the chart
       // Wealth Data Generation
       //const incomeData = [];
@@ -291,13 +291,10 @@
         let currentWealth_20 = (wealthData_20[month - 1] * (1 + r)) + monthlyInvestment_20;
         wealthData_20.push(currentWealth_20);
       }
-      console.log(wealthData_20)
+      //console.log(wealthData_20)
 
       let finalWealth = wealthData_20[wealthData_20.length - 1];
-
-			let big_bit = (Math.pow(r + 1, timeHorizon_30) * (finIncome * (r + 1) - initIncome_30 * (r - (timeHorizon_30 * r) + 1))) + initIncome_30 * (r + 1) - finIncome * (r + timeHorizon_30 * r + 1);
-      //let big_bit = 24248;
-
+      let big_bit = (Math.pow(r + 1, timeHorizon_30) * (finIncome * (r + 1) - initIncome_30 * (r - (timeHorizon_30 * r) + 1))) + initIncome_30 * (r + 1) - finIncome * (r + timeHorizon_30 * r + 1);
       let saveFrxn_30 = (finalWealth * timeHorizon_30 * r * r) / big_bit;
 
       for (let month = 120; month <= timeHorizon; month++) {
@@ -316,27 +313,50 @@
       // Determine the screen size
       const isMobile = window.matchMedia("(max-width: 600px)").matches;
 
+      /*       const labels = Array.from({
+              length: (timeHorizon) + 1
+            }, (_, i) => `${(i)}`);
+            
+            // Modify labels to show years (ensure they are strings)
+            labels.forEach((label, index) => {
+              if (label !== '') { // Only modify non-empty labels
+                labels[index] = (parseFloat(label) / 12).toFixed(1); // Convert to years and ensure string format
+              }
+            }); */
+
+      // Create labels array with floats 
       const labels = Array.from({
-        length: (timeHorizon) + 1
-      }, (_, i) => `${i}`);
+        length: timeHorizon + 1
+      }, (_, i) => {
+        if (i % 12 === 0) {
+          return (i / 12) + 20; // Calculate years directly as floats
+        }
+        return null;
+      });
+
+      console.log(labels)
+      /*       console.log(wealthData_20)
+            console.log(wealthData_30) */
+
+
       const data = {
         labels: labels,
         datasets: [{
-            label: 'No interest', // Descriptive label
+            label: 'Early Save (since 20)', // Descriptive label
             data: wealthData_20,
             borderColor: '#19535f', // Styling options
             backgroundColor: '#19535f', // Styling options
             borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
-            padding: 20
+            padding: 20,
           },
           {
-            label: 'With interest', // Descriptive label
+            label: 'Delayed Saving (since 30)', // Descriptive label
             data: wealthData_30,
             borderColor: '#ee2b44', // Styling options
             backgroundColor: '#ee2b44', // Styling options
             borderWidth: isMobile ? 4 : 5, // Smaller size for mobile ,
             borderRadius: 2,
-            padding: 20
+            padding: 20,
           }
         ]
       };
@@ -381,19 +401,27 @@
               x: { // Styling the X-axis labels
                 title: {
                   display: true,
-                  text: 'Months',
+                  text: 'Age',
                   font: {
                     size: isMobile ? 14 : 24 // Smaller size for mobile
                   }
                 },
-                ticks: {
+                ticks: { //autoSkip: false,
                   maxRotation: 0, // This disables automatic rotation!
                   font: {
                     size: isMobile ? 12 : 20 // Smaller size for mobile
                   },
-                  callback: function(value, index, values) {
-                    return index % 3 === 0 ? value : ''; // Show every sixth label
-                  }
+                  /* 									 callback: function(value, index, values) {
+                  									           // Check if the value is a number and not an empty string
+                  									           if (value !== null) {
+                  									             const year = parseInt(value); // Convert value to number
+                  									             // Display label only if it's a multiple of 5
+                  									             if (year % 10 === 0) {
+                  									               return year; // Return the year as it's already a number
+                  									             }
+                  									           }
+                  									           return ''; // Skip label for empty strings and non-multiples of 5
+                  									         } */
                 }
               },
               y: { // Styling the Y-axis labels
@@ -420,8 +448,10 @@
       saveFrxnValue.textContent = saveFrxnSlider.value;
 
       // Display monthlyInvestment
-      //document.getElementById('monthlyInvestmentValue_20').textContent = monthlyInvestment_20.toFixed(0);
-      //document.getElementById('monthlyInvestmentValue_x').textContent = monthlyInvestment_x.toFixed(0);
+      document.getElementById('saveFrxnValue_30').textContent = (saveFrxn_30*100).toFixed(1);       
+      document.getElementById('finalWealthValue').textContent = finalWealth.toFixed(0);
+      document.getElementById('saveFrxnValueValue').textContent = saveFrxn.toFixed(0);
+
 
       //  Console Log for Debugging!
       //console.log(targetWealthValue, timeHorizonValue, interestRateValue);
