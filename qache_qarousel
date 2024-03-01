@@ -5,7 +5,7 @@
     </div>
     <div class="text-content">
       <h3>Make a Deposit</h3>
-      <p>Short descriptive text about the card.</p>
+      <p>Purchase ethereum in our app. Or deposit ethereum you already own.</p>
     </div>
   </div>
   <div class="card">
@@ -14,7 +14,7 @@
     </div>
     <div class="text-content">
       <h3>Entitled to every draw</h3>
-      <p>Short descriptive text about the card.</p>
+      <p>No matter what your balance, your account is entered into every draw.</p>
     </div>
   </div>
   <div class="card">
@@ -23,7 +23,7 @@
     </div>
     <div class="text-content">
       <h3>Weekly Prize Draw</h3>
-      <p>Short descriptive text about the card.</p>
+      <p>Draws are held every week. Prizes are awarded directly to winning accounts.</p>
     </div>
   </div>
   <div class="card">
@@ -32,7 +32,7 @@
     </div>
     <div class="text-content">
       <h3>Double your balance</h3>
-      <p>Short descriptive text about the card.</p>
+      <p>The largest prize doubles your account balance. Our prizes grow as your balance grows.</p>
     </div>
   </div>
 </div>
@@ -59,6 +59,7 @@
     /* Add rounded corners to the card container */
     overflow: hidden;
     /* Important for rounded images */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
   }
 
   .image-box img {
