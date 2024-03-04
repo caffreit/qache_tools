@@ -1,138 +1,168 @@
-<div class="card-container">
-  <div class="card">
-    <div class="image-box">
-      <img src="https://img.freepik.com/free-photo/full-shot-plus-sized-woman-stretching_23-2150172315.jpg?w=1800&t=st=1709312245~exp=1709312845~hmac=ad1f0da9833db5fc537bf224ec23f3d00659c9a4dd9acb68d4297752f6b73db1" alt="Image Description 1">
+  <div class="card-container">
+    <div class="card">
+      <div class="image-box">
+        <img src="https://imagizer.imageshack.com/img924/4104/EECR1d.png" alt="Image Description">
+      </div>
+      <div class="text-content">
+        <h4>Make a deposit</h4>
+        <p>Purchase ethereum in our app, or deposit ethereum you already own.</p>
+      </div>
     </div>
-    <div class="text-content">
-      <h3>Make a Deposit</h3>
-      <p>Purchase ethereum in our app. Or deposit ethereum you already own.</p>
+    <div class="card">
+      <div class="image-box">
+        <img src="https://imagizer.imageshack.com/img923/5083/PIhjYt.png" alt="Image Description 1">
+      </div>
+      <div class="text-content">
+        <h4>Entered in every draw</h4>
+        <p>No matter your balance, your account is entered into every draw.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="image-box">
+        <img src="https://imagizer.imageshack.com/img922/9658/ngcamw.png" alt="Image Description 1">
+      </div>
+      <div class="text-content">
+        <h4>Weekly prize draw</h4>
+        <p>Draws held every week. Prizes awarded directly to winning accounts.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="image-box">
+        <img src="https://imagizer.imageshack.com/img923/9200/L2FpvJ.png" alt="Image Description 1">
+      </div>
+      <div class="text-content">
+        <h4>Double your balance</h4>
+        <p>Top prize doubles your balance. Prizes grow with your balance.</p>
+      </div>
     </div>
   </div>
-  <div class="card">
-    <div class="image-box">
-      <img src="https://img.freepik.com/free-photo/person-washing-carrots-kitchen_23-2150316427.jpg?w=1380&t=st=1709312419~exp=1709313019~hmac=8c4d5316cfe8f4156bf855e7fb696a11276e0b3986b1f004bf5d79825e2617ca" alt="Image Description 1">
-    </div>
-    <div class="text-content">
-      <h3>Entitled to every draw</h3>
-      <p>No matter what your balance, your account is entered into every draw.</p>
-    </div>
-  </div>
-  <div class="card">
-    <div class="image-box">
-      <img src="https://img.freepik.com/free-photo/medium-shot-woman-wearing-headphones_23-2149818230.jpg?w=826&t=st=1709312421~exp=1709313021~hmac=ccc67a01e03db9d2111660c0f09529401dd1a3f587ef8bad862d8da4c30bed34" alt="Image Description 1">
-    </div>
-    <div class="text-content">
-      <h3>Weekly Prize Draw</h3>
-      <p>Draws are held every week. Prizes are awarded directly to winning accounts.</p>
-    </div>
-  </div>
-  <div class="card">
-    <div class="image-box">
-      <img src="https://img.freepik.com/free-photo/side-view-girl-posing-outdoors_23-2149818242.jpg?w=1800&t=st=1709312483~exp=1709313083~hmac=627e57116201a754c63eeafb5976c167371d5994422fbbc7c1a7df0d8f5ddf13" alt="Image Description 1">
-    </div>
-    <div class="text-content">
-      <h3>Double your balance</h3>
-      <p>The largest prize doubles your account balance. Our prizes grow as your balance grows.</p>
-    </div>
-  </div>
-</div>
 
 
 
-<style>
-  .card-container {
-    display: flex;
-    /* Arrange cards in a row */
-    justify-content: space-around;
-    /* Distribute space around cards */
-    gap: 20px;
-    /* Space between cards */
-  }
+  <style>
+    .card-container {
+      /* display: flex; */
+      /* Arrange cards in a row */
+      /* justify-content: space-around; */
+      /* Distribute space around cards */
 
-  .card {
-    width: 250px;
-    /* Adjust as needed */
-    border: 1px solid #ccc;
-    padding: 0px;
-    text-align: center;
-    border-radius: 10px;
-    /* Add rounded corners to the card container */
-    overflow: hidden;
-    /* Important for rounded images */
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
-  }
-
-  .image-box img {
-    width: 100%;
-    height: auto;
-    /* Maintain image aspect ratio */
-    filter: grayscale(100%);
-    /* Start with grayscale image */
-   /*  border-radius: 10px; */ /* Add rounded corners to the image */
-  }
-
-/*   .card:hover .image-box img {
-    filter: grayscale(0%);
-    Image becomes full color on hover
-    transition: filter 0.3s ease-in-out;
-    Smooth transition
-  } */
-
-  .card .image-box img {
-    width: 100%;
-    height: auto;
-    transition: filter 0.3s ease-in-out;
-    /* Smooth transition */
-  }
-
-  .card:hover .image-box img {
-    filter: grayscale(0%);
-    /* Only color on hover if needed */
-    transform: scale(1.1);
-    /* Scale up the image */
-    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-    /* Smooth transition for both */
-  }
-
-  .text-content p {
-    opacity: 0;
-    /* Hide the paragraph by default */
-    transform: translateY(20px);
-    /* Initially position the text slightly below */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    /* Add a transition effect */
-  }
-
-  .card:hover .text-content p {
-    opacity: 1;
-    /* Make the paragraph visible on hover */
-    transform: translateY(0px);
-    /* Move the text back to its normal position on hover */
-
-  }
-
-</style>
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      /* Two equal columns */
 
 
-<script>
-  const cards = document.querySelectorAll('.card');
+      gap: 120px;
+      /* Space between cards */
+    }
 
-  cards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      cards.forEach(otherCard => {
-        if (otherCard !== card) {
-          otherCard.querySelector('.image-box img').style.filter = 'grayscale(100%)';
-        } else {
-          card.querySelector('.image-box img').style.filter = 'grayscale(0%)';
-        }
+    .card {
+      width: 250px;
+      /* Adjust as needed */
+      border: 0px solid #ccc;
+      background-color: #f5f5f5;
+      /* Add a light grey background */
+      padding: 5px;
+      text-align: left;
+
+      border-radius: 10px;
+      /* Add rounded corners to the card container */
+      overflow: hidden;
+      /* Important for rounded images */
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-box img {
+      width: 100%;
+      height: auto;
+      /* Maintain image aspect ratio */
+      filter: grayscale(100%);
+      /* Start with grayscale image */
+      border-radius: 5px;
+      /* Add rounded corners to the image */
+    }
+
+    /*   .card:hover .image-box img {
+      filter: grayscale(0%);
+      Image becomes full color on hover
+      transition: filter 0.3s ease-in-out;
+      Smooth transition
+    } */
+
+    .card .image-box img {
+      width: 100%;
+      height: auto;
+      transition: filter 0.3s ease-in-out;
+      /* Smooth transition */
+    }
+
+    .card:hover .image-box img {
+      filter: grayscale(0%);
+      /* Only color on hover if needed */
+      transform: scale(1.06);
+      /* transform: translateY(-20px); */
+      /* Scale up the image */
+      transition: transform 0.45s ease-in-out, filter 0.45s ease-in-out;
+      /* Smooth transition for both */
+    }
+
+    .text-content p {
+      opacity: 0;
+      /* Hide the paragraph by default */
+      transform: translateY(20px);
+      /* Initially position the text slightly below */
+      transition: opacity 0.45s ease-in-out, transform 0.45s ease-in-out;
+      /* Add a transition effect */
+      padding-left: 15px;
+      padding-right: 15px;
+      /* Add padding around the text content */
+      text-align: left;
+    }
+
+    .text-content h4 {
+      transform: translateY(20px);
+      /* Initially position the text slightly below */
+      transition: transform 0.4s ease-in-out;
+      /* Add a transition effect */
+      padding-left: 15px;
+      /* Add padding around the text content */
+      text-align: left;
+    }
+
+
+    .card:hover .text-content p {
+      opacity: 1;
+      /* Make the paragraph visible on hover */
+      transform: translateY(0px);
+      /* Move the text back to its normal position on hover */
+    }
+
+    .card:hover .text-content h4 {
+      transform: translateY(0px);
+      /* Move the text back to its normal position on hover */
+    }
+
+  </style>
+
+
+  <script>
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        cards.forEach(otherCard => {
+          if (otherCard !== card) {
+            otherCard.querySelector('.image-box img').style.filter = 'grayscale(100%)';
+          } else {
+            card.querySelector('.image-box img').style.filter = 'grayscale(0%)';
+          }
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        cards.forEach(otherCard => {
+          otherCard.querySelector('.image-box img').style.filter = 'grayscale(0%)'; // Reset all to color
+        });
       });
     });
 
-    card.addEventListener('mouseleave', () => {
-      cards.forEach(otherCard => {
-        otherCard.querySelector('.image-box img').style.filter = 'grayscale(0%)'; // Reset all to color
-      });
-    });
-  });
-
-</script>
+  </script>
