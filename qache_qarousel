@@ -19,7 +19,7 @@
     </div>
     <div class="card">
       <div class="image-box">
-        <img src="https://imagizer.imageshack.com/img922/9658/ngcamw.png" alt="Image Description 1">
+        <img src="https://imagizer.imageshack.com/img922/3867/bhKRjd.png" alt="Image Description 1">
       </div>
       <div class="text-content">
         <h4>Weekly prize draw</h4>
@@ -52,7 +52,7 @@
       grid-template-columns: repeat(2, 1fr); */
       /* Two equal columns */
 
-      /* grid-row-gap: 80px; */
+      grid-row-gap: 50px;
       /* Control the vertical gap */
       grid-column-gap: 50px;
       /* Control the horizontal gap */
@@ -75,6 +75,38 @@
       overflow: hidden;
       /* Important for rounded images */
       box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Adjustments for screens smaller than 768px */
+    @media (max-width: 768px) {
+      .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .card {
+        width: 100%;
+        margin: 5px 0;
+        /* Adjust vertical margin, remove horizontal margin */
+      }
+
+      .text-content p {
+        opacity: 1;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 10px;
+        /* Add padding around the text content */
+        text-align: left;
+      }
+      
+      .card:hover .text-content p {
+      opacity: 1;
+      /* Make the paragraph visible on hover */
+      transform: translateY(0px);
+      /* Move the text back to its normal position on hover */
+    }
     }
 
     .image-box img {
@@ -118,6 +150,7 @@
       /* Add a transition effect */
       padding-top: 0px;
       padding-left: 15px;
+      padding-right: 15px;
       /* Add padding around the text content */
       text-align: left;
     }
@@ -136,15 +169,14 @@
       text-align: left;
     }
 
-
-    .card:hover .text-content p {
-      opacity: 1;
-      /* Make the paragraph visible on hover */
+    .card:hover .text-content h4 {
       transform: translateY(0px);
       /* Move the text back to its normal position on hover */
     }
 
-    .card:hover .text-content h4 {
+    .card:hover .text-content p {
+      opacity: 1;
+      /* Make the paragraph visible on hover */
       transform: translateY(0px);
       /* Move the text back to its normal position on hover */
     }
